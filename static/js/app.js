@@ -3,23 +3,23 @@ function buildMetadata(sample) {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
     // get the metadata field
-  let metadata = data.metadata
+    let metadata = data.metadata
  
     // Filter the metadata for the object with the desired sample number
-  let filteredMetadata = metadata.filter(sampleObj => sampleObj.id == sample);
-  let result = filteredMetadata[0];
-  //Use d3 to select the panel with id of `#sample-metadata`
+    let filteredMetadata = metadata.filter(sampleObj => sampleObj.id == sample);
+    let result = filteredMetadata[0];
+    //Use d3 to select the panel with id of `#sample-metadata`
   
-  panel = d3.select("#sample-metadata")
+    panel = d3.select("#sample-metadata")
 
     // Use `.html("") to clear any existing metadata
-  panel.html("");
+    panel.html("");
 
     // Inside a loop, you will need to use d3 to append new
-  Object.entries(result).forEach(([key, value]) => {
-    panel.append("p").text(`${key}: ${value}`);
+    Object.entries(result).forEach(([key, value]) => {
+      panel.append("p").text(`${key}: ${value}`);
+    });
   });
-});
 }
     // tags for each key-value in the filtered metadata.
 
@@ -52,9 +52,9 @@ function buildCharts(sample) {
           size: sample_values,
           color: otu_ids,
           colorscale: 'Viridis'
-    },
+      },
       text: otu_labels
-}];
+    }];
     
     let layout = {
       title: "Bacteria Cultures Per Sample",
@@ -90,22 +90,28 @@ function init() {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
     // Get the names field
-
+    let sampleNames = metadata.names;
 
     // Use d3 to select the dropdown with id of `#selDataset`
-
+    let dropdownMenu = d3.select("#selDataset");
 
     // Use the list of sample names to populate the select options
     // Hint: Inside a loop, you will need to use d3 to append a new
     // option for each sample name.
-
+    for (let i = 0; i < sampleNames.length; i++){
+      selector
+        .append("option")
+        .text(sampleNames[i])
+        .property("value", sampleNames[i]);
+    };
 
     // Get the first sample from the list
-
+    let firstSample = sampleNames[0];
 
     // Build charts and metadata panel with the first sample
-
-  });
+    buildCharts(firstSample);
+    buildMetadata(firstSample);
+  )};
 }
 
 d3.selectAll("#selDataset").on("change", optionChanged);

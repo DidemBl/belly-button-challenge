@@ -10,20 +10,19 @@ function buildMetadata(sample) {
   let result = filteredMetadata[0];
   //Use d3 to select the panel with id of `#sample-metadata`
   
-  panel = d3.select("sample-metadata")
+  panel = d3.select("#sample-metadata")
 
     // Use `.html("") to clear any existing metadata
   panel.html("");
 
     // Inside a loop, you will need to use d3 to append new
-  for (let i = 0; i<filteredMetadata.length ;i++){
-    panel.append("card-body").text(filteredMetadata[0])
-  };
-
+  Object.entries(result).forEach(([key, value]) => {
+    panel.append("p").text(`${key}: ${value}`);
+  });
+});
+}
     // tags for each key-value in the filtered metadata.
 
-  });
-}
 
 
 
@@ -34,24 +33,28 @@ function buildCharts(sample) {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
     // Get the samples field
-  let samples = data.samples
+    let samples = data.samples
 
     // Filter the samples for the object with the desired sample number
-  let filteredSamples = metadata.filter(sampleObj => sampleObj.id == sample);
-  let sampleResult = filteredSamples[0];
+    let filteredSamples = metadata.filter(sampleObj => sampleObj.id == sample);
+    let sampleResult = filteredSamples[0];
     // Get the otu_ids, otu_labels, and sample_values
-  let otu_ids = sampleResult.otu_ids
-  let otu_labels = sampleResult.otu_labels
-  let sample_values = sampleResult.sample_values
+    let otu_ids = sampleResult.otu_ids
+    let otu_labels = sampleResult.otu_labels
+    let sample_values = sampleResult.sample_values
 
     // Build a Bubble Chart
-    let data = {
+    let bubbleData = [{
       x: otu_ids,
-      y:  sample_values,
+      y: sample_values,
       mode: 'markers',
-      size: sample_values,
-      color: otu_ids
-    };
+      marker: {
+          size: sample_values,
+          color: otu_ids,
+          colorscale: 'Viridis'
+    },
+      text: otu_labels
+}];
     
     let layout = {
       title: "Bacteria Cultures Per Sample",
@@ -64,7 +67,7 @@ function buildCharts(sample) {
     };
     
     // Render the Bubble Chart
-    Plotly.newPlot("plot", data, layout);
+    Plotly.newPlot("bubble", bubbleData, layout);
 
   
    
@@ -73,6 +76,7 @@ function buildCharts(sample) {
 
 
     // Build a Bar Chart
+
     // Don't forget to slice and reverse the input data appropriately
 
 
@@ -109,7 +113,7 @@ d3.selectAll("#selDataset").on("change", optionChanged);
 function optionChanged(newSample) {
   // Build charts and metadata panel each time a new sample is selected
   let dropdownMenu = d3.select("#selDataset");
-  let dataset = dropdownMenu.this("value");
+  let dataset = dropdownMenu.property("value");
   if (dataset == sampleObj.id) {
     newdata = result;
   }

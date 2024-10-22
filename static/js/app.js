@@ -36,7 +36,7 @@ function buildCharts(sample) {
     let samples = data.samples
 
     // Filter the samples for the object with the desired sample number
-    let filteredSamples = metadata.filter(sampleObj => sampleObj.id == sample);
+    let filteredSamples = samples.filter(sampleObj => sampleObj.id == sample);
     let sampleResult = filteredSamples[0];
     // Get the otu_ids, otu_labels, and sample_values
     let otu_ids = sampleResult.otu_ids
@@ -73,12 +73,35 @@ function buildCharts(sample) {
    
 
     // For the Bar Chart, map the otu_ids to a list of strings for your yticks
-
+    let labels = otu_ids.map(otu_id => `OTU ${otu_id}`);
+    
+    
+    let valueKey = sample_values.map((value, index) => {
+      return {value: value, label: labels[index] };
+    });
+    let sortedSample = valueKey.sort((a,b) => b.value - a.value);
+    let slicedData = sortedSample.slice(0, 10);
+    console.log(slicedData)
 
     // Build a Bar Chart
+    let trace1 = {
+      x: slicedData.map(data => data.value),
+      y: slicedData.map(data => data.label),
+      type: 'bar',
+      orientation: 'h'
+    };
 
-    // Don't forget to slice and reverse the input data appropriately
-
+    let layoutBar = {
+      title: "Top 10 Bacteria Cultures Found",
+      xaxis: {
+        title: 'Number of Bacteria'
+      },
+      yaxis: {
+        title: 'OTU IDs'
+      }
+    };
+      // Don't forget to slice and reverse the input data appropriately
+      Plotly.newPlot("bar", [trace1], layoutBar);
 
     // Render the Bar Chart
 
@@ -90,10 +113,10 @@ function init() {
   d3.json("https://static.bc-edx.com/data/dl-1-2/m14/lms/starter/samples.json").then((data) => {
 
     // Get the names field
-    let sampleNames = metadata.names;
+    let sampleNames = data.names;
 
     // Use d3 to select the dropdown with id of `#selDataset`
-    let dropdownMenu = d3.select("#selDataset");
+    let selector = d3.select("#selDataset");
 
     // Use the list of sample names to populate the select options
     // Hint: Inside a loop, you will need to use d3 to append a new
@@ -111,23 +134,23 @@ function init() {
     // Build charts and metadata panel with the first sample
     buildCharts(firstSample);
     buildMetadata(firstSample);
-  )};
+  });
 }
 
-d3.selectAll("#selDataset").on("change", optionChanged);
+//d3.selectAll("#selDataset").on("change", optionChanged);
 // Function for event listener
 function optionChanged(newSample) {
   // Build charts and metadata panel each time a new sample is selected
-  let dropdownMenu = d3.select("#selDataset");
-  let dataset = dropdownMenu.property("value");
-  if (dataset == sampleObj.id) {
-    newdata = result;
-  }
-  updatePlotly(newdata);
-}
+  buildCharts(newSample);
+  buildMetadata(newSample);
+  //if (dataset == sampleName) {
+    //newSample = result;
+  //}
+  //updatePlotly(newSample);
+//}
 // Update the restyled plot's values
-function updatePlotly(newdata) {
-  Plotly.restyle("values",[newdata]);
+//function updatePlotly(newSample) {
+  //Plotly.restyle("values",[newSample]);
 }
 
 

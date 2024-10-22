@@ -143,14 +143,7 @@ function optionChanged(newSample) {
   // Build charts and metadata panel each time a new sample is selected
   buildCharts(newSample);
   buildMetadata(newSample);
-  //if (dataset == sampleName) {
-    //newSample = result;
-  //}
-  //updatePlotly(newSample);
-//}
-// Update the restyled plot's values
-//function updatePlotly(newSample) {
-  //Plotly.restyle("values",[newSample]);
+
 }
 
 
